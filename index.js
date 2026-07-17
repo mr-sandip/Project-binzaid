@@ -21,6 +21,10 @@ const bot = mineflayer.createBot({
 
 bot.once("spawn", () => {
   console.log("BinZaid joined!");
+
+  bot.waitForChunksToLoad().then(() => {
+  console.log("Chunks loaded!");
+ });
 });
 
 bot.on("error", (err) => {
