@@ -71,3 +71,14 @@ bot.on("kicked", (reason) => {
 bot.on("death", () => {
   console.log("BinZaid died!");
 });
+bot.on("end", (reason) => {
+  console.log("END:", reason);
+});
+
+bot.on("close", () => {
+  console.log("Connection closed");
+});
+
+bot.on("disconnect", (packet) => {
+  console.log("DISCONNECT:", packet);
+});
