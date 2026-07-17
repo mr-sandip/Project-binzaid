@@ -30,6 +30,19 @@ bot.once("spawn", () => {
 bot.on("error", (err) => {
   console.log("Bot Error:", err.message);
 });
+bot.on("chat", (username, message) => {
+  if (username === bot.username) return;
+
+  message = message.toLowerCase();
+
+  if (message === "hi") {
+    bot.chat("Hello " + username + "! Mu BinZaid 😊");
+  }
+
+  if (message === "come") {
+    bot.chat("Asuchi " + username + "!");
+  }
+});
 
 bot.on("kicked", (reason) => {
   console.log("Kicked:", reason);
