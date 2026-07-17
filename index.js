@@ -1,4 +1,5 @@
 const express = require("express");
+const mineflayer = require("mineflayer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
