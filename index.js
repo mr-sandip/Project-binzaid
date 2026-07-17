@@ -27,7 +27,7 @@ bot.once("spawn", () => {
 
   bot.waitForChunksToLoad().then(() => {
   console.log("Chunks loaded!");
-    const mcData = mcDataLoader(bot.version);
+    const mcData = mcDataLoader("1.20");
 const defaultMove = new Movements(bot, mcData);
 bot.pathfinder.setMovements(defaultMove);
  });
