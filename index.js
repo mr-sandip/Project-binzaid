@@ -11,3 +11,22 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Web server started on port ${PORT}`);
 });
+
+const bot = mineflayer.createBot({
+  host: "mr_sandip.aternos.me",
+  port: 62409,
+  username: "BinZaid",
+  version: "1.20.1"
+});
+
+bot.once("spawn", () => {
+  console.log("BinZaid joined!");
+});
+
+bot.on("error", (err) => {
+  console.log("Bot Error:", err.message);
+});
+
+bot.on("kicked", (reason) => {
+  console.log("Kicked:", reason);
+});
