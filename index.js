@@ -1,5 +1,7 @@
 const express = require("express");
 const mineflayer = require("mineflayer");
+const { pathfinder, Movements, goals } = require("mineflayer-pathfinder");
+const mcDataLoader = require("minecraft-data");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,12 +20,16 @@ const bot = mineflayer.createBot({
   username: "BinZaid",
   version: "1.20.1"
 });
+bot.loadPlugin(pathfinder);
 
 bot.once("spawn", () => {
   console.log("BinZaid joined!");
 
   bot.waitForChunksToLoad().then(() => {
   console.log("Chunks loaded!");
+    const mcData = mcDataLoader(bot.version);
+const defaultMove = new Movements(bot, mcData);
+bot.pathfinder.setMovements(defaultMove);
  });
 });
 
@@ -40,7 +46,22 @@ bot.on("chat", (username, message) => {
   }
 
   if (message === "come") {
-    bot.chat("Asuchi " + username + "!");
+  const player = bot.players[username];
+
+  if (!player || !player.entity) {
+    bot.chat("Mu tamaku dekhparuni!");
+    return;
+  }
+
+  bot.chat("Asuchi " + username + "!");
+  bot.pathfinder.setGoal(
+    new goals.GoalNear(
+      player.entity.position.x,
+      player.entity.position.y,
+      player.entity.position.z,
+      1
+    )
+  );
   }
 });
 
