@@ -68,6 +68,12 @@ bot.on("chat", (username, message) => {
 bot.on("kicked", (reason) => {
   console.log("Kicked:", reason);
 });
+bot.on("end", () => {
+  console.log("BinZaid disconnected. Reconnecting...");
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});
 bot.on("death", () => {
   console.log("BinZaid died!");
 });
