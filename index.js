@@ -34,3 +34,6 @@ bot.on("error", (err) => {
 bot.on("kicked", (reason) => {
   console.log("Kicked:", reason);
 });
+bot.on("death", () => {
+  console.log("BinZaid died!");
+});
