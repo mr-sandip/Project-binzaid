@@ -67,6 +67,48 @@ bot.on("chat", (username, message) => {
     )
   );
   }
+  
+  if (message === "follow") {
+  const player = bot.players[username];
+
+  if (!player || !player.entity) {
+    bot.chat("Mu tamaku dekhparuni!");
+    return;
+  }
+
+  followPlayer = username;
+
+  if (followInterval) clearInterval(followInterval);
+
+  bot.chat("Mu ebe tamaku follow karibi!");
+
+  followInterval = setInterval(() => {
+    const p = bot.players[followPlayer];
+
+    if (p && p.entity) {
+      bot.pathfinder.setGoal(
+        new goals.GoalNear(
+          p.entity.position.x,
+          p.entity.position.y,
+          p.entity.position.z,
+          1
+        )
+      );
+    }
+  }, 1000);
+}
+
+if (message === "stop") {
+  if (followInterval) {
+    clearInterval(followInterval);
+    followInterval = null;
+  }
+
+  followPlayer = null;
+  bot.pathfinder.setGoal(null);
+
+  bot.chat("Thik achhi, follow band karideli.");
+}
 });
 
 bot.on("kicked", (reason) => {
