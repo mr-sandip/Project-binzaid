@@ -36,6 +36,10 @@ bot.pathfinder.setMovements(defaultMove);
 bot.on("error", (err) => {
   console.log("Bot Error:", err.message);
 });
+
+let followPlayer = null;
+let followInterval = null;
+
 bot.on("chat", (username, message) => {
   if (username === bot.username) return;
 
