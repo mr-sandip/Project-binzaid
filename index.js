@@ -2,6 +2,7 @@ const express = require("express");
 const mineflayer = require("mineflayer");
 const { pathfinder, Movements, goals } = require("mineflayer-pathfinder");
 const mcDataLoader = require("minecraft-data");
+const { plugin: collectBlock } = require("mineflayer-collectblock");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ const bot = mineflayer.createBot({
   version: "1.20.1"
 });
 bot.loadPlugin(pathfinder);
+bot.loadPlugin(collectBlock);
 
 bot.once("spawn", () => {
   console.log("BinZaid joined!");
