@@ -121,8 +121,14 @@ if (message === "stop") {
 }
 
 if (message === "guard") {
-bot.pathfinder.setGoal(null);
-bot.chat("Guard mode enabled!");
+  if (followInterval) {
+    clearInterval(followInterval);
+    followInterval = null;
+  }
+
+  followPlayer = null;
+  bot.pathfinder.setGoal(null);
+  bot.chat("Guard mode enabled!");
 }
 });
 
