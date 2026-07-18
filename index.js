@@ -48,7 +48,15 @@ bot.on("chat", (username, message) => {
   message = message.toLowerCase();
 
   if (message === "hi") {
-    bot.chat("Hello " + username + "! Mu BinZaid 😊");
+  const replies = [
+    "Hello " + username + "! 😊",
+    "Hi " + username + "! Kemiti achha?",
+    "Good to see you, " + username + "! 😄",
+    "Mu ethare achhi! Kana kama?",
+    "Hey " + username + "! Mu ready achhi!"
+  ];
+
+  bot.chat(replies[Math.floor(Math.random() * replies.length)]);
   }
 
   if (message === "help") {
