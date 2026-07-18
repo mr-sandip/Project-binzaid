@@ -68,27 +68,48 @@ const randomMessages = [
 ];
 
 async function collectLogs() {
-  const log = bot.findBlock({
-    matching: block => block.name.includes("log"),
-    maxDistance: 6
+  // 1. Find the nearest log block to serve as the base of the tree
+  const baseLogPos = bot.findBlock({
+    matching: block => block.name.includes("log") || block.name.includes("wood"),
+    maxDistance: 32 // Increased distance so he can spot nearby trees easily
   });
 
-  if (!log) {
+  if (!baseLogPos) {
+    bot.chat("Mu sabu kath kati sarichi! 🌳");
+    return;
+  }
+
+  const baseLog = bot.blockAt(baseLogPos);
+  
+  // 2. Scan for all connected logs of the EXACT same type within the tree's radius
+  const logPositions = bot.findBlocks({
+    matching: block => block.name === baseLog.name,
+    point: baseLogPos,
+    maxDistance: 8, // Covers the height and canopy width of typical survival trees
+    count: 40       // Max logs to harvest per tree so he doesn't break
+  });
+
+  // 3. Map the positions into an array of actual block objects
+  const blocksToCollect = logPositions.map(pos => bot.blockAt(pos)).filter(Boolean);
+
+  if (blocksToCollect.length === 0) {
     bot.chat("Mu sabu kath kati sarichi! 🌳");
     return;
   }
 
   try {
-    await bot.collectBlock.collect(log);
-
-    // 200ms pare puni log khojiba
-    setTimeout(collectLogs, 200);
-
+    // mineflayer-collectblock can accept an array of blocks and mine them sequentially
+    await bot.collectBlock.collect(blocksToCollect);
+    bot.chat("Pura gachha kota sarigala! Puni khojuchi... 🪓");
+    
+    // Check if there are any other trees nearby after finishing this one
+    setTimeout(collectLogs, 500);
   } catch (err) {
-    console.log(err);
-    bot.chat("Kath katibare problem hela!");
+    console.log("Wood Cutting Error:", err);
+    bot.chat("Kath katibare problem hela! 😟");
   }
 }
+
 
 bot.on("chat", async (username, message) => {
   if (username === bot.username) return;
