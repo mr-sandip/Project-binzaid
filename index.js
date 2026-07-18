@@ -162,6 +162,31 @@ if (message === "guard") {
   homePosition = bot.entity.position.clone();
   bot.chat("Home set!");
   }
+
+  if (message === "home") {
+  if (!homePosition) {
+    bot.chat("Home set hoini!");
+    return;
+  }
+
+  if (followInterval) {
+    clearInterval(followInterval);
+    followInterval = null;
+  }
+
+  followPlayer = null;
+
+  bot.chat("Home ku asuchi!");
+
+  bot.pathfinder.setGoal(
+    new goals.GoalNear(
+      homePosition.x,
+      homePosition.y,
+      homePosition.z,
+      1
+    )
+  );
+  }
 });
 
 bot.on("kicked", (reason) => {
