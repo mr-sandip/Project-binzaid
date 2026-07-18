@@ -63,7 +63,7 @@ bot.on("chat", (username, message) => {
       player.entity.position.x,
       player.entity.position.y,
       player.entity.position.z,
-      1
+      4
     )
   );
   }
@@ -91,7 +91,7 @@ bot.on("chat", (username, message) => {
           p.entity.position.x,
           p.entity.position.y,
           p.entity.position.z,
-          1
+          4
         )
       );
     }
