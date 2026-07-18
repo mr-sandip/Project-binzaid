@@ -39,6 +39,7 @@ bot.on("error", (err) => {
 
 let followPlayer = null;
 let followInterval = null;
+let stayPosition = null;
 
 bot.on("chat", (username, message) => {
   if (username === bot.username) return;
@@ -57,6 +58,7 @@ bot.on("chat", (username, message) => {
   bot.chat("stop - Stop current action");
   bot.chat("help - Show all commands");
   bot.chat("guard - Stay at current position");
+  bot.chat("stay - Stay at current position");
   }
 
   if (message === "come") {
@@ -130,6 +132,28 @@ if (message === "guard") {
   bot.pathfinder.setGoal(null);
   bot.chat("Guard mode enabled!");
 }
+
+  if (message === "stay") {
+  if (followInterval) {
+    clearInterval(followInterval);
+    followInterval = null;
+  }
+
+  followPlayer = null;
+
+  stayPosition = bot.entity.position.clone();
+
+  bot.pathfinder.setGoal(
+    new goals.GoalNear(
+      stayPosition.x,
+      stayPosition.y,
+      stayPosition.z,
+      1
+    )
+  );
+
+  bot.chat("Mu eithi rahibi!");
+  }
 });
 
 bot.on("kicked", (reason) => {
