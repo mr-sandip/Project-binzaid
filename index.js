@@ -3,6 +3,7 @@ const mineflayer = require("mineflayer");
 const { pathfinder, Movements, goals } = require("mineflayer-pathfinder");
 const mcDataLoader = require("minecraft-data");
 const { plugin: collectBlock } = require("mineflayer-collectblock");
+const { plugin: toolPlugin } = require("mineflayer-tool");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ const bot = mineflayer.createBot({
   version: "1.20.1"
 });
 bot.loadPlugin(pathfinder);
+bot.loadPlugin(toolPlugin);
 bot.loadPlugin(collectBlock);
 
 bot.once("spawn", () => {
@@ -65,7 +67,7 @@ const randomMessages = [
   "Mu ethare achhi!"
 ];
 
-bot.on("chat", (username, message) => {
+bot.on("chat", async (username, message) => {
   if (username === bot.username) return;
 
   message = message.toLowerCase();
