@@ -67,48 +67,40 @@ const randomMessages = [
   "Mu ethare achhi!"
 ];
 
+let isChopping = false;
+
 async function collectLogs() {
-  // 1. Find the nearest log block to serve as the base of the tree
-  const baseLogPos = bot.findBlock({
+  if (isChopping) return; // Prevent duplicate loops
+  isChopping = true;
+
+  // Distance ku 12 karidela, jaha dwara bot gachha ra upara log bi dekhipariba
+  const log = bot.findBlock({
     matching: block => block.name.includes("log") || block.name.includes("wood"),
-    maxDistance: 32 // Increased distance so he can spot nearby trees easily
+    maxDistance: 12
   });
 
-  if (!baseLogPos) {
+  if (!log) {
     bot.chat("Mu sabu kath kati sarichi! 🌳");
-    return;
-  }
-
-  const baseLog = bot.blockAt(baseLogPos);
-  
-  // 2. Scan for all connected logs of the EXACT same type within the tree's radius
-  const logPositions = bot.findBlocks({
-    matching: block => block.name === baseLog.name,
-    point: baseLogPos,
-    maxDistance: 8, // Covers the height and canopy width of typical survival trees
-    count: 40       // Max logs to harvest per tree so he doesn't break
-  });
-
-  // 3. Map the positions into an array of actual block objects
-  const blocksToCollect = logPositions.map(pos => bot.blockAt(pos)).filter(Boolean);
-
-  if (blocksToCollect.length === 0) {
-    bot.chat("Mu sabu kath kati sarichi! 🌳");
+    isChopping = false;
     return;
   }
 
   try {
-    // mineflayer-collectblock can accept an array of blocks and mine them sequentially
-    await bot.collectBlock.collect(blocksToCollect);
-    bot.chat("Pura gachha kota sarigala! Puni khojuchi... 🪓");
+    // Gote block ku safely mine kariba
+    await bot.collectBlock.collect(log);
     
-    // Check if there are any other trees nearby after finishing this one
-    setTimeout(collectLogs, 500);
+    isChopping = false;
+    // 300ms gap re parbarti log pain check kariba (Anti-cheat bypass pain)
+    setTimeout(collectLogs, 300);
+
   } catch (err) {
-    console.log("Wood Cutting Error:", err);
-    bot.chat("Kath katibare problem hela! 😟");
+    console.log("Chopping error:", err.message);
+    isChopping = false;
+    // Jadi pathfinding error ase, 1 second pare puni try kariba
+    setTimeout(collectLogs, 1000);
   }
 }
+
 
 
 bot.on("chat", async (username, message) => {
