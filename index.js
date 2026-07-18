@@ -96,20 +96,14 @@ async function collectLogs() {
   }
 }
 
-// --- FIXED AI BRAIN (V1BETA ENDPOINT) ---
+// --- FIXED AI BRAIN (V1BETA END
+
 async function getAIFriendResponse(playerMessage, playerName) {
   const apiKey = process.env.GEMINI_API_KEY;
-  
-  if (!apiKey) {
-    return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! Render Variable ଚେକ୍ କର। 🧠❌";
-  }
+  if (!apiKey) return null;
 
   try {
-    // URL ରେ v1 ଜାଗାରେ v1beta କରାଯାଇଛି, ଯାହା ଦ୍ୱାରା gemini-1.5-flash ସଫଳତାର ସହ ଚାଲିବ
-    
-   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-     
-      
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -122,20 +116,15 @@ async function getAIFriendResponse(playerMessage, playerName) {
     });
 
     const data = await response.json();
-    
-    if (data && data.error) {
-      return `AI Error: ${data.error.message} 😟`;
-    }
-
     if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
       return data.candidates[0].content.parts[0].text.trim();
     }
   } catch (err) {
     console.error("Gemini AI Error:", err.message);
-    return "ସର୍ଭର କନେକ୍ସନ୍ ପ୍ରୋବ୍ଲେମ୍ ହେଉଛି ସାଙ୍ଗ! 🌐";
   }
-  return "ମୁଁ ବୁଝିପାରିଲିନି, ଆଉଥରେ କହିବ କି? 🤔";
+  return null;
 }
+
 
 
 
