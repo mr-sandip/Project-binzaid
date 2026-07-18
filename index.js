@@ -98,10 +98,8 @@ bot.on("chat", (username, message) => {
   }
 
   if (message === "wood") {
-
   const log = bot.findBlock({
-    matching: block =>
-      block.name.includes("log"),
+    matching: block => block.name.includes("log"),
     maxDistance: 32
   });
 
@@ -110,17 +108,15 @@ bot.on("chat", (username, message) => {
     return;
   }
 
-  bot.chat("Mu gachha pakhaku jauchi! 🌳");
+  bot.chat("Mu kath katibaku jauchi! 🌳");
 
-  bot.pathfinder.setGoal(
-    new goals.GoalNear(
-      log.position.x,
-      log.position.y,
-      log.position.z,
-      1
-    )
-  );
-
+  try {
+    await bot.collectBlock.collect(log);
+    bot.chat("Kath kati sarili! 😄");
+  } catch (err) {
+    console.log(err);
+    bot.chat("Kath katiparilini!");
+  }
   }
 
   if (message === "come") {
