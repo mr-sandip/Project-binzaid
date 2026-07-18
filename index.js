@@ -43,7 +43,7 @@ bot.pathfinder.setMovements(defaultMove);
   const msg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
   bot.chat(msg);
 
-}, 900000); // 15 minutes
+}, 30000); // 15 minutes
  });
 });
 
