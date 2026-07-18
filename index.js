@@ -56,6 +56,7 @@ bot.on("chat", (username, message) => {
   bot.chat("follow - BinZaid will follow you");
   bot.chat("stop - Stop current action");
   bot.chat("help - Show all commands");
+  bot.chat("guard - Stay at current position");
   }
 
   if (message === "come") {
@@ -117,6 +118,11 @@ if (message === "stop") {
   bot.pathfinder.setGoal(null);
 
   bot.chat("Thik achhi, follow band karideli.");
+}
+
+if (message === "guard") {
+bot.pathfinder.setGoal(null);
+bot.chat("Guard mode enabled!");
 }
 });
 
