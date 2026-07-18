@@ -96,10 +96,13 @@ async function collectLogs() {
   }
 }
 
-// --- ୨. SMART AI BRAIN (GEMINI API) ---
+// --- ୨. DEBUGGING AI BRAIN ---
 async function getAIFriendResponse(playerMessage, playerName) {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
+  
+  if (!apiKey) {
+    return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! Render Variable ଚେକ୍ କର। 🧠❌";
+  }
 
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -108,21 +111,28 @@ async function getAIFriendResponse(playerMessage, playerName) {
       body: JSON.stringify({
         contents: [{ 
           parts: [{ 
-            text: `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଗେମ୍‌ରେ ଜଣେ AI ସାଙ୍ଗ ଅଟ। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ଓଡ଼ିଆ ଭାଷାରେ (Odia language in Latin/Odia script) ଜଣେ ଘନିଷ୍ଠ ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ ଭଳି କଥା ହେଉଛ। ୧ ରୁ ୨ ଧାଡ଼ି ଭିତରେ ଛୋଟ ଓ ସୁନ୍ଦର ଉତ୍ତର ଦିଅ। ପ୍ଲେୟାର୍ କହିଲା: "${playerMessage}"` 
+            text: `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଗେମ୍‌ରେ ଜଣେ AI ସାଙ୍ଗ ଅଟ। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ଓଡ଼ିଆ ଭାଷାରେ (Odia language) କଥା ହେଉଛ। ୧ ରୁ ୨ ଧାଡ଼ି ଭିତରେ ଛୋଟ ଓ ସୁନ୍ଦର ଉତ୍ତର ଦିଅ। ପ୍ଲେୟାର୍ କହିଲା: "${playerMessage}"` 
           }] 
         }]
       })
     });
 
     const data = await response.json();
+    
+    if (data && data.error) {
+      return `AI Error: ${data.error.message} 😟`;
+    }
+
     if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
       return data.candidates[0].content.parts[0].text.trim();
     }
   } catch (err) {
     console.error("Gemini AI Error:", err.message);
+    return "ସର୍ଭର କନେକ୍ସନ୍ ପ୍ରୋବ୍ଲେମ୍ ହେଉଛି ସାଙ୍ଗ! 🌐";
   }
-  return null;
+  return "ମୁଁ ବୁଝିପାରିଲିନି, ଆଉଥରେ କହିବ କି? 🤔";
 }
+
 
 // --- ୩. CHAT & GAME COMMAND LISTENER ---
 bot.on("chat", async (username, message) => {
