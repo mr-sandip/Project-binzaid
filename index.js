@@ -96,7 +96,7 @@ async function collectLogs() {
   }
 }
 
-// --- ୨. DEBUGGING AI BRAIN ---
+// --- FIXED AI BRAIN (V1BETA ENDPOINT) ---
 async function getAIFriendResponse(playerMessage, playerName) {
   const apiKey = process.env.GEMINI_API_KEY;
   
@@ -105,7 +105,8 @@ async function getAIFriendResponse(playerMessage, playerName) {
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    // URL ରେ v1 ଜାଗାରେ v1beta କରାଯାଇଛି, ଯାହା ଦ୍ୱାରା gemini-1.5-flash ସଫଳତାର ସହ ଚାଲିବ
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -132,6 +133,7 @@ async function getAIFriendResponse(playerMessage, playerName) {
   }
   return "ମୁଁ ବୁଝିପାରିଲିନି, ଆଉଥରେ କହିବ କି? 🤔";
 }
+
 
 
 // --- ୩. CHAT & GAME COMMAND LISTENER ---
