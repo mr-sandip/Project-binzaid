@@ -61,6 +61,7 @@ bot.on("chat", (username, message) => {
   bot.chat("stay - Stay at current position");
   bot.chat("sethome - Save current position as home");
   bot.chat("home - Go to saved home");
+  bot.chat("thanks / good morning / good night / bye - Friendly chat");
   bot.chat("help - Show all commands");
   }
 
@@ -187,6 +188,22 @@ if (message === "guard") {
     )
   );
   }
+
+  if (message === "thanks" || message === "thank you") {
+  bot.chat("Always welcome, " + username + "! 😊");
+}
+
+if (message === "good morning") {
+  bot.chat("Good morning, " + username + "! 🌞");
+}
+
+if (message === "good night") {
+  bot.chat("Good night, " + username + "! 🌙");
+}
+
+if (message === "bye") {
+  bot.chat("Bye " + username + "! Mu wait karibi. 👋");
+}
 });
 
 bot.on("kicked", (reason) => {
