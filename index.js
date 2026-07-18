@@ -40,6 +40,7 @@ bot.on("error", (err) => {
 let followPlayer = null;
 let followInterval = null;
 let stayPosition = null;
+let homePosition = null;
 
 bot.on("chat", (username, message) => {
   if (username === bot.username) return;
@@ -56,9 +57,11 @@ bot.on("chat", (username, message) => {
   bot.chat("come - BinZaid will come to you");
   bot.chat("follow - BinZaid will follow you");
   bot.chat("stop - Stop current action");
-  bot.chat("help - Show all commands");
   bot.chat("guard - Stay at current position");
   bot.chat("stay - Stay at current position");
+  bot.chat("sethome - Save current position as home");
+  bot.chat("home - Go to saved home");
+  bot.chat("help - Show all commands");
   }
 
   if (message === "come") {
@@ -153,6 +156,11 @@ if (message === "guard") {
   );
 
   bot.chat("Mu eithi rahibi!");
+  }
+
+  if (message === "sethome") {
+  homePosition = bot.entity.position.clone();
+  bot.chat("Home set!");
   }
 });
 
