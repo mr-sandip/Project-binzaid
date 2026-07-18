@@ -49,6 +49,15 @@ bot.on("chat", (username, message) => {
     bot.chat("Hello " + username + "! Mu BinZaid 😊");
   }
 
+  if (message === "help") {
+  bot.chat("=== BinZaid Commands ===");
+  bot.chat("hi - Greet BinZaid");
+  bot.chat("come - BinZaid will come to you");
+  bot.chat("follow - BinZaid will follow you");
+  bot.chat("stop - Stop current action");
+  bot.chat("help - Show all commands");
+  }
+
   if (message === "come") {
   const player = bot.players[username];
 
