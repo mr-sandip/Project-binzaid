@@ -25,11 +25,25 @@ bot.loadPlugin(pathfinder);
 bot.once("spawn", () => {
   console.log("BinZaid joined!");
 
-  bot.waitForChunksToLoad().then(() => {
-  console.log("Chunks loaded!");
-    const mcData = mcDataLoader("1.20");
+bot.waitForChunksToLoad().then(() => {
+console.log("Chunks loaded!");
+    
+const mcData = mcDataLoader("1.20");
 const defaultMove = new Movements(bot, mcData);
 bot.pathfinder.setMovements(defaultMove);
+  setInterval(() => {
+  if (!bot.players) return;
+
+  const players = Object.keys(bot.players).filter(
+    p => p !== bot.username && bot.players[p].entity
+  );
+
+  if (players.length === 0) return;
+
+  const msg = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+  bot.chat(msg);
+
+}, 900000); // 15 minutes
  });
 });
 
@@ -41,6 +55,13 @@ let followPlayer = null;
 let followInterval = null;
 let stayPosition = null;
 let homePosition = null;
+const randomMessages = [
+  "Kana karuchha? 😊",
+  "Mu ready achhi!",
+  "Adventure ku jiba? ⛏️",
+  "Mo pakhare nua kama achhi ki? 😄",
+  "Mu ethare achhi!"
+];
 
 bot.on("chat", (username, message) => {
   if (username === bot.username) return;
