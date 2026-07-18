@@ -95,6 +95,32 @@ bot.on("chat", (username, message) => {
   bot.chat("help - Show all commands");
   }
 
+  if (message === "wood") {
+
+  const log = bot.findBlock({
+    matching: block =>
+      block.name.includes("log"),
+    maxDistance: 32
+  });
+
+  if (!log) {
+    bot.chat("Mu pakhare kaunasi gachha pauni!");
+    return;
+  }
+
+  bot.chat("Mu gachha pakhaku jauchi! 🌳");
+
+  bot.pathfinder.setGoal(
+    new goals.GoalNear(
+      log.position.x,
+      log.position.y,
+      log.position.z,
+      1
+    )
+  );
+
+  }
+
   if (message === "come") {
   const player = bot.players[username];
 
