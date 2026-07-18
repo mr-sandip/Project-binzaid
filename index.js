@@ -359,4 +359,3 @@ async function getAIFriendResponse(playerMessage, playerName) {
   }
   return null;
 }
-
