@@ -108,6 +108,19 @@ bot.on("chat", async (username, message) => {
 
   message = message.toLowerCase();
 
+    // --- AI ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ ଚେକ୍ ---
+  const gameCommands = ["wood", "come", "follow", "stop", "guard", "stay", "sethome", "home", "help"];
+  
+  // ଯଦି ଏହା ଗେମ୍ କମାଣ୍ଡ୍ ନୁହେଁ, ତେବେ AI ନିଜେ ଉତ୍ତର ତିଆରି କରିବ
+  if (!gameCommands.includes(message)) {
+    const aiReply = await getAIFriendResponse(message, username);
+    if (aiReply) {
+      bot.chat(aiReply);
+      return; // AI ଉତ୍ତର ଦେଇଦେଲା, ତେଣୁ ତଳେ ଥିବା ପୁରୁଣା static static ରିପ୍ଲାଏ ଗୁଡ଼ିକ ଚାଲିବନି
+    }
+  }
+  
+
   if (message === "hi") {
   const replies = [
     "Hello " + username + "! 😊",
@@ -318,3 +331,32 @@ bot.on("close", () => {
 bot.on("disconnect", (packet) => {
   console.log("DISCONNECT:", packet);
 });
+
+// --- ବିନଜାଏଦ୍‌ର ସ୍ମାର୍ଟ AI ବ୍ରେନ୍ ---
+async function getAIFriendResponse(playerMessage, playerName) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null; // ଯଦି Render ରେ API Key ସେଟ୍ ହୋଇନଥିବ, ତେବେ AI କାମ କରିବନି
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ 
+          parts: [{ 
+            text: `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଗେମ୍‌ରେ ଜଣେ AI ସାଙ୍ଗ ଅଟ। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ଓଡ଼ିଆ ଭାଷାରେ (Odia language in Latin/Odia script) ଜଣେ ଘନିଷ୍ଠ ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ ଭଳି କଥା ହେଉଛ। ୧ ରୁ ୨ ଧାଡ଼ି ଭିତରେ ଛୋଟ ଓ ସୁନ୍ଦର ଉତ୍ତର ଦିଅ। ପ୍ଲେୟାର୍ କହିଲା: "${playerMessage}"` 
+          }] 
+        }]
+      })
+    });
+
+    const data = await response.json();
+    if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text.trim();
+    }
+  } catch (err) {
+    console.error("Gemini AI Error:", err.message);
+  }
+  return null;
+}
+
