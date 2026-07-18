@@ -68,7 +68,26 @@ const randomMessages = [
 ];
 
 async function collectLogs() {
-  ...
+  const log = bot.findBlock({
+    matching: block => block.name.includes("log"),
+    maxDistance: 6
+  });
+
+  if (!log) {
+    bot.chat("Mu sabu kath kati sarichi! 🌳");
+    return;
+  }
+
+  try {
+    await bot.collectBlock.collect(log);
+
+    // 200ms pare puni log khojiba
+    setTimeout(collectLogs, 200);
+
+  } catch (err) {
+    console.log(err);
+    bot.chat("Kath katibare problem hela!");
+  }
 }
 
 bot.on("chat", async (username, message) => {
