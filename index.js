@@ -70,6 +70,7 @@ bot.on("chat", (username, message) => {
   bot.chat("sethome - Save current position as home");
   bot.chat("home - Go to saved home");
   bot.chat("thanks / good morning / good night / bye - Friendly chat");
+  bot.chat("joke - Hear a random Minecraft joke");
   bot.chat("help - Show all commands");
   }
 
@@ -198,7 +199,7 @@ if (message === "guard") {
   }
 
   if (message === "thanks" || message === "thank you") {
-  bot.chat("Always welcome, " + username + "! 😊");
+  bot.chat("welcome, " + username + "! 😊");
 }
 
 if (message === "good morning") {
@@ -212,6 +213,20 @@ if (message === "good night") {
 if (message === "bye") {
   bot.chat("Bye " + username + "! Mu wait karibi. 👋");
 }
+
+if (message === "joke") {
+  const jokes = [
+    "Creeper kahila: Mu surprise gift nei asichi! 💥😂",
+    "Zombie gym gala... hele brain khaibaku bhuligala! 😂",
+    "Skeleton exam re fail hela, karana target miss karidela! 🎯😂",
+    "Enderman selfie neipareni... camera ku dekhile teleport heijae! 😆",
+    "Chicken road cross kala... karana anya side re diamond thila! 💎😂",
+    "Villager kahila: Hmmm... mane discount nahin! 😂",
+    "Steve ra luck ete kharap je lava re diamond khojuthila! 😅"
+  ];
+
+  bot.chat(jokes[Math.floor(Math.random() * jokes.length)]);
+  }
 });
 
 bot.on("kicked", (reason) => {
