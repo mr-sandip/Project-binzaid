@@ -67,6 +67,10 @@ const randomMessages = [
   "Mu ethare achhi!"
 ];
 
+async function collectLogs() {
+  ...
+}
+
 bot.on("chat", async (username, message) => {
   if (username === bot.username) return;
 
@@ -100,25 +104,8 @@ bot.on("chat", async (username, message) => {
   }
 
   if (message === "wood") {
-  const log = bot.findBlock({
-    matching: block => block.name.includes("log"),
-    maxDistance: 32
-  });
-
-  if (!log) {
-    bot.chat("Mu pakhare kaunasi gachha pauni!");
-    return;
-  }
-
   bot.chat("Mu kath katibaku jauchi! 🌳");
-
-  try {
-    await bot.collectBlock.collect(log);
-    bot.chat("Kath kati sarili! 😄");
-  } catch (err) {
-    console.log(err);
-    bot.chat("Kath katiparilini!");
-  }
+  collectLogs();
   }
 
   if (message === "come") {
