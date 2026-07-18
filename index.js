@@ -88,7 +88,7 @@ async function collectLogs() {
   try {
     await bot.collectBlock.collect(log);
     isChopping = false;
-    setTimeout(collectLogs, 300); // Kick ନହେବା ପାଇଁ ୩୦୦ms ର safe gap
+    setTimeout(collectLogs, 300);
   } catch (err) {
     console.log("Chopping error:", err.message);
     isChopping = false;
@@ -96,8 +96,7 @@ async function collectLogs() {
   }
 }
 
-// --- FIXED AI BRAIN (V1BETA END
-
+// --- ୨. SMART AI BRAIN (GEMINI 1.5 FLASH) ---
 async function getAIFriendResponse(playerMessage, playerName) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
@@ -125,16 +124,12 @@ async function getAIFriendResponse(playerMessage, playerName) {
   return null;
 }
 
-
-
-
 // --- ୩. CHAT & GAME COMMAND LISTENER ---
 bot.on("chat", async (username, message) => {
   if (username === bot.username) return;
 
   const cleanMessage = message.toLowerCase();
 
-  // ପ୍ରଥମେ ଚେକ୍ ହେବ ଏହା ଗେମ୍ କମାଣ୍ଡ କି ନୁହେଁ, ନହୋଇଥିଲେ AI ଉତ୍ତର ଦେବ
   const gameCommands = ["wood", "come", "follow", "stop", "guard", "stay", "sethome", "home", "help"];
   if (!gameCommands.includes(cleanMessage)) {
     const aiReply = await getAIFriendResponse(message, username);
@@ -144,7 +139,6 @@ bot.on("chat", async (username, message) => {
     }
   }
 
-  // ତମର ସବୁଯାକ ପୁରୁଣା ଗେମ୍ କମାଣ୍ଡ୍
   if (cleanMessage === "hi") {
     const replies = [
       "Hello " + username + "! 😊",
@@ -276,3 +270,4 @@ bot.on("end", () => {
 bot.on("death", () => { console.log("BinZaid died!"); });
 bot.on("close", () => { console.log("Connection closed"); });
 bot.on("disconnect", (packet) => { console.log("DISCONNECT:", packet); });
+    
