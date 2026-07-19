@@ -88,56 +88,44 @@ function initBot() {
   }
 
   // --- REAL HUMAN AI FRIEND BRAIN (GEMINI 1.5 FLASH WITH HISTORY) ---
-  async function getAIFriendResponse(playerMessage, playerName) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return null;
+ async function getAIFriendResponse(playerMessage, playerName) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! 🧠❌";
 
-    // ମେମୋରୀ ଭିତରକୁ ନୂଆ ୟୁଜର ମେସେଜ୍ ପୁଶ୍ କରିବା
-    conversationHistory.push({ role: "user", parts: [{ text: playerMessage }] });
+  conversationHistory.push({ role: "user", parts: [{ text: playerMessage }] });
+  if (conversationHistory.length > 10) conversationHistory.shift();
+
+  const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ ଗପିବ। ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍ତର ଦିଅ।`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: conversationHistory,
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      })
+    });
+
+    const data = await response.json();
     
-    // ମେମୋରୀ ଅଧିକ ବଡ଼ ହେଲେ ଲାଟେଷ୍ଟ ୧୦ଟି ମେସେଜ୍ କୁ ରଖିବା
-    if (conversationHistory.length > 10) conversationHistory.shift();
-
-    // AI କୁ ଜଣେ ପ୍ରକୃତ ସାଙ୍ଗର ପର୍ସନାଲିଟି ଦେବା ପାଇଁ ସିଷ୍ଟମ୍ ଇନଷ୍ଟ୍ରକସନ୍
-    const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ (Casual Odia mixed with English words, like conversational chatting) ଗପିବ। କୌଣସି ରୋବୋଟ୍ ଭଳିଆ ଉତ୍ତର ଦେବନି, ପୂର୍ବ କଥାକୁ ମନେ ପକାଇ ଜଣେ ପ୍ରକୃତ ସାଙ୍ଗ ଭଳି ସୁନ୍ଦର ଓ ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍ତର ଦିଅ।`;
-
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: conversationHistory,
-          systemInstruction: { parts: [{ text: systemPrompt }] }
-        })
-      });
-
-      const data = await response.json();
-      if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        const aiText = data.candidates[0].content.parts[0].text.trim();
-        // AI ର ଉତ୍ତରକୁ ମଧ୍ୟ ମେମୋରୀରେ ସେଭ୍ କରିବା
-        conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
-        return aiText;
-      }
-    } catch (err) {
-      console.error("AI Error:", err.message);
+    // ଯଦି ଗୁଗଲ୍ ସର୍ଭର କିଛି ଏରର ଦିଏ, ତେବେ ଗେମ୍‌ରେ ସେଇଟା ଦେଖାଯିବ
+    if (data && data.error) {
+      return `API Error: ${data.error.message} 😟`;
     }
-    return "Tike network issue achhi saanga, puni ଥରେ କୁହ! 😅";
+
+    if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      const aiText = data.candidates[0].content.parts[0].text.trim();
+      conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
+      return aiText;
+    }
+    
+    return "API Response format invalid! 🤔";
+  } catch (err) {
+    return `Fetch Crash Error: ${err.message} 🌐`;
   }
-
-  // --- ଚାଟ୍ ଏବଂ ଗେମ୍ କମାଣ୍ଡ୍ ଲିସନର୍ ---
-  bot.on("chat", async (username, message) => {
-    if (username === bot.username) return;
-    const cleanMessage = message.toLowerCase();
-
-    // ଗେମ୍ କମାଣ୍ଡ୍ ଗୁଡ଼ିକୁ ଚିହ୍ନିବା
-    const gameCommands = ["wood", "come", "follow", "stop", "guard", "stay", "sethome", "home", "help"];
-    if (!gameCommands.includes(cleanMessage)) {
-      const aiReply = await getAIFriendResponse(message, username);
-      if (aiReply) {
-        bot.chat(aiReply);
-        return;
-      }
-    }
+ }
+  
 
     // ଗେମ୍ କମାଣ୍ଡ୍ ର ଏକ୍ସିକ୍ୟୁସନ୍
     if (cleanMessage === "help") {
