@@ -8,9 +8,14 @@ const { plugin: toolPlugin } = require("mineflayer-tool");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Render କୁ ସଙ୍ଗେ ସଙ୍ଗେ Live କରିବା ପାଇଁ ୱେବ୍ ସର୍ଭର ପ୍ରଥମେ ଚାଲିବ
-app.get("/", (req, res) => res.send("Project BinZaid AI is perfectly Live!"));
-app.listen(PORT, () => console.log(`Web server successfully bound to port ${PORT}`));
+// Render Web Service କୁ ତୁରନ୍ତ Live କରିବା ପାଇଁ Express ଆଗ ଚାଲିବ
+app.get("/", (req, res) => {
+  res.send("Project BinZaid AI Master Engine v2.0 is perfectly Live!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Web server successfully bound to port ${PORT}`);
+});
 
 let bot;
 let followPlayer = null;
@@ -18,8 +23,6 @@ let followInterval = null;
 let stayPosition = null;
 let homePosition = null;
 let isChopping = false;
-
-// AI ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍‌ର ଚାଟ୍ ମେମୋରୀ (ପୁରୁଣା କଥା ମନେ ରଖିବା ପାଇଁ)
 let conversationHistory = [];
 
 const randomMessages = [
@@ -30,13 +33,13 @@ const randomMessages = [
   "Mu ethare achhi!"
 ];
 
-// ସର୍ଭର ଡିସକନେକ୍ଟ ହେଲେ ବଟ୍ କୁ କ୍ରାସ୍ ନକରାଇ ପୁଣି କନେକ୍ଟ କରିବା ପାଇଁ ମେନ୍ ଫଙ୍କସନ୍
+// ବଟ୍ ଷ୍ଟାର୍ଟ କରିବା ଏବଂ ଅଟୋ-ରିକନେକ୍ଟ ପାଇଁ ମେନ୍ ଫଙ୍କସନ୍
 function initBot() {
   console.log("Connecting BinZaid to Minecraft server...");
   
   bot = mineflayer.createBot({
     host: "mr_sandip.aternos.me",
-    port: 62409, // 👈 ତମର ବର୍ତ୍ତମାନର ପୋର୍ଟ ନମ୍ବର ଏଠାରେ ଲେଖିବ
+    port: 62409, // 👈 ତମ Aternos ର ବର୍ତ୍ତମାନର Online Port ଏଠାରେ ଲେଖିବ
     username: "BinZaid",
     version: "1.20.1"
   });
@@ -46,9 +49,9 @@ function initBot() {
   bot.loadPlugin(collectBlock);
 
   bot.once("spawn", () => {
-    console.log("BinZaid joined the world!");
+    console.log("BinZaid successfully joined the world!");
     bot.waitForChunksToLoad().then(() => {
-      console.log("Chunks loaded successfully!");
+      console.log("World chunks loaded!");
       const mcData = mcDataLoader("1.20");
       const defaultMove = new Movements(bot, mcData);
       bot.pathfinder.setMovements(defaultMove);
@@ -64,7 +67,7 @@ function initBot() {
     bot.chat(msg);
   }, 900000);
 
-  // --- ATERNOS SAFE WOOD CUTTING ---
+  // --- ୧. ATERNOS SAFE WOOD CUTTING ---
   async function collectLogs() {
     if (isChopping) return;
     isChopping = true;
@@ -87,110 +90,146 @@ function initBot() {
     }
   }
 
-  // --- REAL HUMAN AI FRIEND BRAIN (GEMINI 1.5 FLASH WITH HISTORY) ---
- async function getAIFriendResponse(playerMessage, playerName) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! 🧠❌";
+  // --- ୨. GEMINI 1.5 FLASH AI FRIEND BRAIN WITH INTENT PARSING ---
+  async function getAIFriendResponse(playerMessage, playerName) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! Render Variable ଚେକ୍ କର। 🧠❌";
 
-  conversationHistory.push({ role: "user", parts: [{ text: playerMessage }] });
-  if (conversationHistory.length > 10) conversationHistory.shift();
+    conversationHistory.push({ role: "user", parts: [{ text: playerMessage }] });
+    if (conversationHistory.length > 10) conversationHistory.shift();
 
-  const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ବେଷ୍ଟ ଫ୍ରେଣ୍ଡ୍ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ ଗପିବ। ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍ତର ଦିଅ।`;
+    const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ (Casual Odia mixed with English words) ଗପିବ। ଜଣେ ପ୍ରକୃତ ସାଙ୍ଗ ଭଳି ସୁନ୍ଦର ଓ ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍ତର ଦିଅ। 
 
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: conversationHistory,
-        systemInstruction: { parts: [{ text: systemPrompt }] }
-      })
-    });
+    CRITICAL RULES FOR ACTIONS:
+    यदि ପ୍ଲେୟାର୍ କାଠ କାଟିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:wood]
+    यदि ପ୍ଲେୟାର୍ ତା ପାଖକୁ ଆସିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:come]
+    यदि ପ୍ଲେୟାର୍ ତାକୁ ଫଲୋ/ପଛରେ ଆସିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:follow]
+    यदि ପ୍ଲେୟାର୍ କୌଣସି କାମ ବନ୍ଦ କରିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:stop]
+    यदि ପ୍ଲେୟାର୍ ସେଇଠି ଜଗିବାକୁ/ରହିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:stay]
+    यदि ପ୍ଲେୟାର୍ ଘର ପୋଜିସନ୍ ସେଟ୍ କରିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:sethome]
+    यदि ପ୍ଲେୟାର୍ ଘରକୁ ଯିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:home]`;
 
-    const data = await response.json();
-    
-    // ଯଦି ଗୁଗଲ୍ ସର୍ଭର କିଛି ଏରର ଦିଏ, ତେବେ ଗେମ୍‌ରେ ସେଇଟା ଦେଖାଯିବ
-    if (data && data.error) {
-      return `API Error: ${data.error.message} 😟`;
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: conversationHistory,
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data && data.error) {
+        return `AI Error: ${data.error.message} 😟`;
+      }
+
+      if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+        const aiText = data.candidates[0].content.parts[0].text.trim();
+        conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
+        return aiText;
+      }
+    } catch (err) {
+      return `Fetch Crash Error: ${err.message} 🌐`;
     }
-
-    if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      const aiText = data.candidates[0].content.parts[0].text.trim();
-      conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
-      return aiText;
-    }
-    
-    return "API Response format invalid! 🤔";
-  } catch (err) {
-    return `Fetch Crash Error: ${err.message} 🌐`;
+    return "Mu tike bujhiparilini saanga, au thare kahiba? 🤔";
   }
- }
-  
 
-    // ଗେମ୍ କମାଣ୍ଡ୍ ର ଏକ୍ସିକ୍ୟୁସନ୍
-    if (cleanMessage === "help") {
-      bot.chat("=== BinZaid Commands ===");
-      bot.chat("wood | come | follow | stop | guard | stay | sethome | home");
-    }
-    if (cleanMessage === "wood") {
-      bot.chat("Mu kath katibaku jauchi! 🌳");
+  // --- ୩. SMART CHAT & ACTION EXECUTION ---
+  bot.on("chat", async (username, message) => {
+    if (username === bot.username) return;
+
+    // AI ରୁ ନାଚୁରାଲ୍ ରେସପନ୍ସ ଏବଂ ଇଣ୍ଟେଣ୍ଟ ମଗାଇବା
+    let aiReply = await getAIFriendResponse(message, username);
+    if (!aiReply) return;
+
+    // AI Action Parsing & Hidden Execution
+    if (aiReply.includes("[ACTION:wood]")) {
+      aiReply = aiReply.replace("[ACTION:wood]", "").trim();
+      bot.chat(aiReply);
       collectLogs();
-    }
-    if (cleanMessage === "come") {
-      const player = bot.players[username];
-      if (!player || !player.entity) return bot.chat("Mu tamaku dekhparuni!");
-      bot.chat("Asuchi " + username + "!");
-      bot.pathfinder.setGoal(new goals.GoalNear(player.entity.position.x, player.entity.position.y, player.entity.position.z, 4));
-    }
-    if (cleanMessage === "follow") {
-      const player = bot.players[username];
-      if (!player || !player.entity) return bot.chat("Mu tamaku dekhparuni!");
-      followPlayer = username;
-      if (followInterval) clearInterval(followInterval);
-      bot.chat("Mu ebe tamaku follow karibi! 🏃‍♂️");
-      followInterval = setInterval(() => {
-        const p = bot.players[followPlayer];
-        if (p && p.entity) bot.pathfinder.setGoal(new goals.GoalNear(p.entity.position.x, p.entity.position.y, p.entity.position.z, 4));
-      }, 1000);
-    }
-    if (cleanMessage === "stop") {
-      if (followInterval) { clearInterval(followInterval); followInterval = null; }
-      followPlayer = null; bot.pathfinder.setGoal(null);
-      bot.chat("Thik achhi, follow band karideli.");
-    }
-    if (cleanMessage === "guard") {
-      if (followInterval) { clearInterval(followInterval); followInterval = null; }
-      followPlayer = null; bot.pathfinder.setGoal(null);
-      bot.chat("Guard mode enabled!");
-    }
-    if (cleanMessage === "stay") {
-      if (followInterval) { clearInterval(followInterval); followInterval = null; }
-      followPlayer = null; stayPosition = bot.entity.position.clone();
-      bot.pathfinder.setGoal(new goals.GoalNear(stayPosition.x, stayPosition.y, stayPosition.z, 1));
-      bot.chat("Mu eithi rahibi!");
-    }
-    if (cleanMessage === "sethome") {
-      homePosition = bot.entity.position.clone();
-      bot.chat("Home set!");
-    }
-    if (cleanMessage === "home") {
-      if (!homePosition) return bot.chat("Home set hoini!");
-      if (followInterval) { clearInterval(followInterval); followInterval = null; }
-      followPlayer = null; bot.chat("Home ku asuchi!");
-      bot.pathfinder.setGoal(new goals.GoalNear(homePosition.x, homePosition.y, homePosition.z, 1));
+      return;
     }
 
-  // --- ସୁରକ୍ଷିତ ମେମୋରୀ ଏବଂ ଏରର ହ୍ୟାଣ୍ଡଲିଙ୍ଗ ---
+    if (aiReply.includes("[ACTION:come]")) {
+      aiReply = aiReply.replace("[ACTION:come]", "").trim();
+      bot.chat(aiReply);
+      const player = bot.players[username];
+      if (player && player.entity) {
+        bot.pathfinder.setGoal(new goals.GoalNear(player.entity.position.x, player.entity.position.y, player.entity.position.z, 2));
+      }
+      return;
+    }
+
+    if (aiReply.includes("[ACTION:follow]")) {
+      aiReply = aiReply.replace("[ACTION:follow]", "").trim();
+      bot.chat(aiReply);
+      const player = bot.players[username];
+      if (player && player.entity) {
+        followPlayer = username;
+        if (followInterval) clearInterval(followInterval);
+        followInterval = setInterval(() => {
+          const p = bot.players[followPlayer];
+          if (p && p.entity) bot.pathfinder.setGoal(new goals.GoalNear(p.entity.position.x, p.entity.position.y, p.entity.position.z, 3));
+        }, 1000);
+      }
+      return;
+    }
+
+    if (aiReply.includes("[ACTION:stop]")) {
+      aiReply = aiReply.replace("[ACTION:stop]", "").trim();
+      bot.chat(aiReply);
+      if (followInterval) { clearInterval(followInterval); followInterval = null; }
+      followPlayer = null;
+      bot.pathfinder.setGoal(null);
+      return;
+    }
+
+    if (aiReply.includes("[ACTION:stay]")) {
+      aiReply = aiReply.replace("[ACTION:stay]", "").trim();
+      bot.chat(aiReply);
+      if (followInterval) { clearInterval(followInterval); followInterval = null; }
+      followPlayer = null;
+      stayPosition = bot.entity.position.clone();
+      bot.pathfinder.setGoal(new goals.GoalNear(stayPosition.x, stayPosition.y, stayPosition.z, 1));
+      return;
+    }
+
+    if (aiReply.includes("[ACTION:sethome]")) {
+      aiReply = aiReply.replace("[ACTION:sethome]", "").trim();
+      bot.chat(aiReply);
+      homePosition = bot.entity.position.clone();
+      return;
+    }
+
+    if (aiReply.includes("[ACTION:home]")) {
+      aiReply = aiReply.replace("[ACTION:home]", "").trim();
+      if (!homePosition) {
+        bot.chat("Mu home set karini saanga! 🏡");
+        return;
+      }
+      bot.chat(aiReply);
+      if (followInterval) { clearInterval(followInterval); followInterval = null; }
+      followPlayer = null;
+      bot.pathfinder.setGoal(new goals.GoalNear(homePosition.x, homePosition.y, homePosition.z, 1));
+      return;
+    }
+
+    // ଯଦି କୌଣସି ଆକ୍ସନ ନଥାଏ, ତେବେ ନର୍ମାଲ୍ ଚାଟ୍ ରିପ୍ଲାଏ କରିବ
+    bot.chat(aiReply);
+  });
+
   bot.on("error", (err) => console.log("Mineflayer Error:", err.message));
   bot.on("kicked", (reason) => console.log("Kicked from server:", reason));
   
   bot.on("end", () => {
-    console.log("Disconnected. Reconnecting safely in 5 seconds...");
+    console.log("Disconnected from Minecraft. Reconnecting safely in 5 seconds...");
+    clearInterval(msgInterval);
     if (followInterval) clearInterval(followInterval);
-    setTimeout(initBot, 5000); // Process କୁ exit ନକରି ପୁଣି ଷ୍ଟାର୍ଟ କରାଯିବ
+    setTimeout(initBot, 5000); // Safe Reconnection Loop (No Process Exit)
   });
 }
 
-// ବଟ୍ ପ୍ରୋସେସ୍ ଚାଲୁ କରିବା
+// AI Bot Process Initial Start
 initBot();
-      
