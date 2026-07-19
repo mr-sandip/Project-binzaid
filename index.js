@@ -39,7 +39,7 @@ function initBot() {
   
   bot = mineflayer.createBot({
     host: "mr_sandip.aternos.me",
-    port: 62409, // 👈 ତମ Aternos ର ବର୍ତ୍ତମାନର Online Port ଏଠାରେ ଲେଖିବ
+    port: 62409, // 👈 ତମ Aternos ର ନୂଆ Port ନମ୍ବର ଏଠାରେ ଲେଖିବ
     username: "BinZaid",
     version: "1.20.1"
   });
@@ -90,7 +90,7 @@ function initBot() {
     }
   }
 
-  // --- ୨. GEMINI 1.5 FLASH AI FRIEND BRAIN WITH INTENT PARSING ---
+  // --- ୨. GEMINI 2.0 FLASH AI FRIEND BRAIN WITH INTENT PARSING ---
   async function getAIFriendResponse(playerMessage, playerName) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return "ମୋ ପାଖରେ AI Brain Key ନାହିଁ ସାଙ୍ଗ! Render Variable ଚେକ୍ କର। 🧠❌";
@@ -98,7 +98,7 @@ function initBot() {
     conversationHistory.push({ role: "user", parts: [{ text: playerMessage }] });
     if (conversationHistory.length > 10) conversationHistory.shift();
 
-    const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ (Casual Odia mixed with English words) ଗପିବ। ଜଣେ ପ୍ରକୃତ ସାଙ୍ଗ ଭଳି ସୁନ୍ଦର ଓ ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍ତର ଦିଅ। 
+    const systemPrompt = `ତମେ ମାଇନକ୍ରାଫ୍ଟ ଜାଭା ୧.୨୦.୧ ଦୁନିଆରେ ଜଣେ ଅସଲି ମଣିଷ ସାଙ୍ଗ ଭଳି। ତମ ନାଁ 'BinZaid'। ତମେ ତମର ସାଙ୍ଗ '${playerName}' ସହ ୱାନ ବ୍ଲକ୍ ସର୍ଭାଇଭାଲ୍ ଖେଳୁଛ। ତମେ ତାର ସବୁ କଥା ମନେ ରଖି ତା ସହ ଓଡ଼ିଆ ଭାଷାରେ (Casual Odia mixed with English words) ଗପିବ। ଜଣେ ପ୍ରକୃତ ସାଙ୍ଗ ଭଳି ସୁନ୍ଦର ଓ ଛୋଟ ୧-୨ ଲାଇନର ଉତ୍តର ଦିଅ। 
 
     CRITICAL RULES FOR ACTIONS:
     यदि ପ୍ଲେୟାର୍ କାଠ କାଟିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:wood]
@@ -110,7 +110,7 @@ function initBot() {
     यदि ପ୍ଲେୟାର୍ ଘରକୁ ଯିବାକୁ କହେ, ତେବେ ଉତ୍ତର ଶେଷରେ ଲେଖିବ: [ACTION:home]`;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -140,11 +140,9 @@ function initBot() {
   bot.on("chat", async (username, message) => {
     if (username === bot.username) return;
 
-    // AI ରୁ ନାଚୁରାଲ୍ ରେସପନ୍ସ ଏବଂ ଇଣ୍ଟେଣ୍ଟ ମଗାଇବା
     let aiReply = await getAIFriendResponse(message, username);
     if (!aiReply) return;
 
-    // AI Action Parsing & Hidden Execution
     if (aiReply.includes("[ACTION:wood]")) {
       aiReply = aiReply.replace("[ACTION:wood]", "").trim();
       bot.chat(aiReply);
@@ -216,7 +214,6 @@ function initBot() {
       return;
     }
 
-    // ଯଦି କୌଣସି ଆକ୍ସନ ନଥାଏ, ତେବେ ନର୍ମାଲ୍ ଚାଟ୍ ରିପ୍ଲାଏ କରିବ
     bot.chat(aiReply);
   });
 
@@ -227,9 +224,9 @@ function initBot() {
     console.log("Disconnected from Minecraft. Reconnecting safely in 5 seconds...");
     clearInterval(msgInterval);
     if (followInterval) clearInterval(followInterval);
-    setTimeout(initBot, 5000); // Safe Reconnection Loop (No Process Exit)
+    setTimeout(initBot, 5000);
   });
 }
 
-// AI Bot Process Initial Start
 initBot();
+                                   
