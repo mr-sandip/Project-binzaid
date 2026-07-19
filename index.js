@@ -179,7 +179,6 @@ function initBot() {
       followPlayer = null; bot.chat("Home ku asuchi!");
       bot.pathfinder.setGoal(new goals.GoalNear(homePosition.x, homePosition.y, homePosition.z, 1));
     }
-  });
 
   // --- ସୁରକ୍ଷିତ ମେମୋରୀ ଏବଂ ଏରର ହ୍ୟାଣ୍ଡଲିଙ୍ଗ ---
   bot.on("error", (err) => console.log("Mineflayer Error:", err.message));
