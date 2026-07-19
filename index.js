@@ -187,7 +187,6 @@ function initBot() {
   
   bot.on("end", () => {
     console.log("Disconnected. Reconnecting safely in 5 seconds...");
-    clearInterval(msgInterval);
     if (followInterval) clearInterval(followInterval);
     setTimeout(initBot, 5000); // Process କୁ exit ନକରି ପୁଣି ଷ୍ଟାର୍ଟ କରାଯିବ
   });
